@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
-import { LocalAuthGuard } from './auth.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './jwt-auth.guard';
 import {
   ApiBody,
   ApiCreatedResponse,
@@ -9,11 +8,16 @@ import {
 } from '@nestjs/swagger';
 import { BearerTokenDto } from './dto/bearerTokenDto';
 import { LoginDto } from './dto/login.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { UserRole } from '../users/enums/user.role';
+import { Roles } from '../users/users.decorator';
+import { Public } from './public.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Public()
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   @ApiBody({
@@ -30,6 +34,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Roles(UserRole.Admin)
   @Get('/profile')
   getProfile(@Request() req: any) {
     return req.user;

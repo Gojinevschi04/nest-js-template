@@ -18,7 +18,7 @@ async function bootstrap() {
   if (configSwagger.get<boolean>('ENABLE_OPEN_API')) {
     SwaggerModule.setup('api', app, document);
   }
-  const port = configSwagger.get<number>('APP_PORT') as any;
+  const port = configSwagger.get<number>('APP_PORT') as number;
   await app.listen(port);
 }
 
