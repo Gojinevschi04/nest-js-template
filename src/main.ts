@@ -9,7 +9,10 @@ dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configSwagger = app.get(ConfigService);
-  const config = new DocumentBuilder().build();
+  const config = new DocumentBuilder()
+    .addBearerAuth()
+    .addSecurityRequirements('bearer')
+    .build();
   const document = SwaggerModule.createDocument(app, config);
 
   if (configSwagger.get<boolean>('ENABLE_OPEN_API')) {
