@@ -12,6 +12,7 @@ const config = {
   database: process.env.DATABASE_NAME,
   entities: ['dist/**/*.entity{.ts,.js}'],
   migrations: ['dist/database/migrations/*{.ts,.js}'],
+  seeds: ['dist/database/seeds/**/*{.ts,.js}'],
   autoLoadEntities: true,
   synchronize: false,
   logging: false,
