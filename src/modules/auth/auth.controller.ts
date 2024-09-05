@@ -1,9 +1,16 @@
-import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
 import {
   ApiBody,
   ApiCreatedResponse,
+  ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { BearerTokenDto } from './dto/bearerTokenDto';
@@ -13,6 +20,7 @@ import { UserRole } from '../users/enums/user.role';
 import { Roles } from '../users/users.decorator';
 import { Public } from './public.decorator';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}

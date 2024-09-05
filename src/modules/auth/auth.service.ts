@@ -1,7 +1,7 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { LoginUserDto } from '../users/login-user.dto';
+import { LoginUserDto } from '../users/dto/login-user.dto';
 import { BearerTokenDto } from './dto/bearerTokenDto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
@@ -37,8 +37,8 @@ export class AuthService {
       sub: userData.id,
       role: userData.role,
     };
-    return {
-      accessToken: this.jwtService.sign(payload),
-    };
+    const bearerDto = new BearerTokenDto();
+    bearerDto.accessToken = this.jwtService.sign(payload);
+    return bearerDto;
   }
 }
