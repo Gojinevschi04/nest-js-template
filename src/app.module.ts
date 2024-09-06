@@ -11,6 +11,9 @@ import typeorm from './config/typeorm';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './modules/users/users.guard';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
+import { BullModule } from '@nestjs/bull';
+import { MailerModule } from '@nestjs-modules/mailer';
+import * as process from 'node:process';
 
 @Module({
   imports: [
@@ -22,6 +25,29 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) =>
         configService.get('typeorm') as TypeOrmModuleAsyncOptions,
+    }),
+    BullModule.forRootAsync({
+      useFactory: async () => ({
+        redis: {
+          host: process.env.REDIS_HOST,
+          port: +(process.env.REDIS_PORT as string),
+          password: process.env.REDIS_PASSWORD,
+          db: process.env.REDIS_DB as any,
+        },
+      }),
+    }),
+    MailerModule.forRootAsync({
+      useFactory: () => ({
+        transport: {
+          host: process.env.SMTP_HOST,
+          port: process.env.SMTP_PORT,
+          ignoreTLS: true,
+          secure: false,
+        },
+        defaults: {
+          from: process.env.SMTP_USER,
+        },
+      }),
     }),
     AuthModule,
     UsersModule,

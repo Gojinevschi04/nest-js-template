@@ -4,14 +4,13 @@ import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from '../users/dto/login-user.dto';
 import { BearerTokenDto } from './dto/bearerTokenDto';
 import * as bcrypt from 'bcrypt';
-import { ConfigService } from '@nestjs/config';
+import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private configService: ConfigService,
   ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
@@ -19,11 +18,7 @@ export class AuthService {
     if (!user) {
       return null;
     }
-    const saltOrRounds = this.configService.get<string>(
-      'SALT_ROUNDS',
-    ) as string;
-    const hash = await bcrypt.hash(pass, +saltOrRounds);
-    const isMatch = await bcrypt.compare(pass, hash);
+    const isMatch = await bcrypt.compare(pass, user.password);
     if (isMatch) {
       return user;
     }
@@ -32,13 +27,8 @@ export class AuthService {
   }
 
   async login(userData: LoginUserDto): Promise<BearerTokenDto> {
-    const payload = {
-      username: userData.username,
-      sub: userData.id,
-      role: userData.role,
-    };
     const bearerDto = new BearerTokenDto();
-    bearerDto.accessToken = this.jwtService.sign(payload);
+    bearerDto.accessToken = this.jwtService.sign(instanceToPlain(userData));
     return bearerDto;
   }
 }

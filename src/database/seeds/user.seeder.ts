@@ -5,7 +5,6 @@ import { UserRole } from '../../modules/users/enums/user.role';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import * as dotenv from 'dotenv';
-import process from 'node:process';
 
 dotenv.config();
 
