@@ -45,6 +45,7 @@ export class UsersController {
 
   @PaginatedSwaggerDocs(User, USER_PAGINATION_CONFIG)
   @Get()
+  @Public()
   findAll(@Paginate() query: PaginateQuery): Promise<Paginated<User>> {
     return this.usersService.findAll(query);
   }

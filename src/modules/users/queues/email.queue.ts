@@ -13,11 +13,10 @@ export class EmailQueue {
     const { data } = job;
     const { to, subject, text } = data;
 
-    console.log(444);
     await this.mailerService.sendMail({
       to,
       subject,
-      text: 'email content',
+      text: text,
       context: { text },
     });
   }

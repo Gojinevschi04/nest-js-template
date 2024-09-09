@@ -8,6 +8,8 @@ import * as dotenv from 'dotenv';
 import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
 import * as process from 'node:process';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ResetPassword } from './reset-password.entity';
 
 dotenv.config();
 
@@ -15,6 +17,7 @@ dotenv.config();
   imports: [
     UsersModule,
     PassportModule,
+    TypeOrmModule.forFeature([ResetPassword]),
     JwtModule.register({
       global: true,
       secret: process.env.APP_TOKEN,
