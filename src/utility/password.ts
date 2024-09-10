@@ -6,5 +6,5 @@ dotenv.config();
 
 export async function hashPassword(password: string): Promise<string> {
   const saltOrRounds = process.env.SALT_ROUNDS as string;
-  return await bcrypt.hash(password, saltOrRounds);
+  return bcrypt.hash(password, +saltOrRounds);
 }

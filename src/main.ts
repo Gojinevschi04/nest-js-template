@@ -1,13 +1,9 @@
-import { NestFactory, Reflector } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as dotenv from 'dotenv';
 import { ConfigService } from '@nestjs/config';
-import {
-  ClassSerializerInterceptor,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 
 dotenv.config();
 
@@ -24,18 +20,8 @@ async function bootstrap() {
     SwaggerModule.setup('api', app, document);
   }
   const port = configSwagger.get<number>('APP_PORT') as number;
-  registerGlobals(app);
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(port);
-}
-
-export function registerGlobals(app: INestApplication) {
-  app.useGlobalInterceptors(
-    new ClassSerializerInterceptor(app.get(Reflector), {
-      strategy: 'excludeAll',
-      excludeExtraneousValues: true,
-    }),
-  );
 }
 
 bootstrap();

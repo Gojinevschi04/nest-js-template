@@ -10,7 +10,6 @@ import { plainToInstance } from 'class-transformer';
 import { UserChangePasswordDto } from './dto/user-change-password.dto';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { ResetPassword } from '../auth/reset-password.entity';
 import { hashPassword } from '../../utility/password';
 
 @Injectable()
@@ -18,7 +17,6 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    @InjectRepository(ResetPassword)
     @InjectQueue('email')
     private readonly emailQueue: Queue,
   ) {}
@@ -27,12 +25,11 @@ export class UsersService {
     const user = plainToInstance(User, createUserDto);
 
     user.password = await hashPassword(createUserDto.password);
-
     return plainToInstance(UserDto, this.usersRepository.save(user));
   }
 
-  findAll(query: PaginateQuery): Promise<Paginated<User>> {
-    return paginate(query, this.usersRepository, USER_PAGINATION_CONFIG);
+  async findAll(query: PaginateQuery): Promise<Paginated<User>> {
+    return await paginate(query, this.usersRepository, USER_PAGINATION_CONFIG);
   }
 
   async findOneById(id: number): Promise<UserDto | null> {
@@ -48,16 +45,16 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UserDto): Promise<UserDto | null> {
-    let oldUserData = await this.usersRepository.findOneBy({ id: id });
+    const oldUserData = await this.usersRepository.findOneBy({ id: id });
 
-    if (!oldUserData) {
+    if (oldUserData == null) {
       return null;
     }
 
-    oldUserData = plainToInstance(User, updateUserDto);
-    oldUserData.password = await hashPassword(updateUserDto.password);
+    const userData = this.usersRepository.merge(oldUserData, updateUserDto);
+    userData.password = await hashPassword(updateUserDto.password);
 
-    return plainToInstance(UserDto, this.usersRepository.save(oldUserData));
+    return plainToInstance(UserDto, this.usersRepository.save(userData));
   }
 
   async changePassword(
